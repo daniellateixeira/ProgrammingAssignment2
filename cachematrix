@@ -1,0 +1,33 @@
+## These two functions calculate and cache the inverse of a matrix. 
+## Function 1 creates the matrix from which its inverse is cached, and Function 2 calculates the inverse, including by searching for previous calculations. 
+
+# Function 1: makeCacheMatrix creates a matrix that caches its inverse. 
+
+makeCacheMatrix <- function(matrix = matrix()){
+        inverse <- NULL                                 # Creates the inverse variable and sets it to null. 
+        set <- function(y) {
+                matrix <<- y                            # Sets matrix as y in the makeCacheMatrix parent environment. 
+                inverse <<- NULL                        # Sets inverse as null in the makeCacheMatrix parent environment. 
+        }
+        get <- function() matrix 
+        setinverse <- function(i) inverse <<- i         # Assigns value of i to inverse and stores the inverse
+        getinverse <- function() inverse                # Returns value of inverse from the makeCacheMatrix frame. 
+        list(set = set, get = get, 
+             setinverse = setinverse, 
+             getinverse = getinverse)
+}
+
+# Function 2: cacheSolve computes the inverse of the matrix from makeCacheMatrix. 
+# It searches for previously calculated inverse via lexical scoping. 
+
+cacheSolve <- function(matrix, ...){
+        inverse <- matrix$getinverse()                  # Assigns the value of inverse from the matrix environment here. 
+        if(!is.null(inverse)) {                         # Checking for previously calculated inverse. 
+                message("getting cached data...")       
+                return(inverse)                         # If it exists, returns the value of the previously calculated inverse from the cache. 
+        }                                               # and bypasses the remaining code. Otherwise, the proceeding code is executed.
+        data <- matrix$get()
+        inverse <- solve(data,...)                      # Calculates the inverse of the matrix.
+        matrix$setinverse(inverse)                      # Sets the value of the inverse of the matrix in the cache. 
+        inverse                                         # Returns the inverse. 
+}
